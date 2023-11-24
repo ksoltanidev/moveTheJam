@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import useKeyboard from './useKeyboard.tsx';
 import { getRandomPosition } from './utils/getRandomPosition.tsx';
+import isColliding from './utils/isColliding.tsx';
 
-const GAME_SPEED = 250;
-const LEVEL_DURATION = 12000;
+export const GAME_SPEED = 250;
+export const LEVEL_DURATION = 12000;
 
 export type JarMovementType = {
   id: number;
@@ -16,6 +17,7 @@ export type JarMovementType = {
 export type GameStateType = {
   gameState: 'menu' | 'playing' | 'gameOver';
   level: number;
+  score: number;
   objective: { x: number; y: number };
   startDate: number;
 };
@@ -29,6 +31,7 @@ export default function useGame({ boardSize, jamJarSize }: GameProps) {
   const [gameState, setGameState] = useState<GameStateType>({
     gameState: 'playing',
     level: 1,
+    score: 0,
     objective: getRandomPosition(boardSize),
     startDate: Date.now(),
   });
@@ -54,10 +57,11 @@ export default function useGame({ boardSize, jamJarSize }: GameProps) {
   const requestUpdateRef = useRef<number>(0);
   const { keyPressedRef } = useKeyboard();
 
-  function NextLevelTrigger() {
+  function CompleteLevel() {
     const newGameState = {
       ...GameStateRefCache.current,
       level: GameStateRefCache.current.level + 1,
+      score: Math.floor(GameStateRefCache.current.score + (LEVEL_DURATION - (Date.now() - gameState.startDate)) / 100), // + time left
       objective: getRandomPosition(boardSize),
       startDate: Date.now(),
     };
@@ -73,7 +77,7 @@ export default function useGame({ boardSize, jamJarSize }: GameProps) {
       id: playerRefCache.current.id + 1,
       positions: [
         {
-          position: getRandomPosition(boardSize),
+          position: playerRefCache.current.positions[playerRefCache.current.positions.length - 1].position,
           state: 'full',
         },
       ],
@@ -84,6 +88,18 @@ export default function useGame({ boardSize, jamJarSize }: GameProps) {
     setFrame(0);
     lastFrameTimeRef.current = Date.now();
     // console.log('NewLevel', newPlayerJar);
+  }
+
+  function GameOver() {
+    const newGameState = {
+      ...GameStateRefCache.current,
+      gameState: 'gameOver' as const,
+    };
+    setGameState(newGameState);
+    GameStateRefCache.current = newGameState;
+
+    setFrame(0);
+    lastFrameTimeRef.current = Date.now();
   }
 
   function updatePlayerJarPosition(lastPlayerJarPosition: JarMovementType['positions'][0], deltaTime: number) {
@@ -119,26 +135,52 @@ export default function useGame({ boardSize, jamJarSize }: GameProps) {
   }
 
   const update = () => {
-    setFrame((prevFrame) => prevFrame + 1); // Increment frame or reset if necessary
+    if (gameState.gameState == 'playing') {
+      setFrame((prevFrame) => prevFrame + 1); // Increment frame or reset if necessary
 
-    const deltaTime = lastFrameTimeRef.current - Date.now();
-    lastFrameTimeRef.current = Date.now();
+      const deltaTime = lastFrameTimeRef.current - Date.now();
+      lastFrameTimeRef.current = Date.now();
 
-    //Update Game State
-    const gameDeltaTime = Date.now() - GameStateRefCache.current.startDate;
-    if (gameDeltaTime > LEVEL_DURATION) {
-      NextLevelTrigger();
-    } else {
-      //UpdatePlayerJarPosition
-      const lastPlayerJarPosition = playerRefCache.current.positions[playerRefCache.current.positions.length - 1];
-      const playerJarPosition = updatePlayerJarPosition(lastPlayerJarPosition, deltaTime);
-      const newPlayerJar: JarMovementType = {
-        ...playerJar,
-        positions: [...playerRefCache.current.positions, playerJarPosition],
-      };
-      setPlayerJar(newPlayerJar);
-      playerRefCache.current = newPlayerJar;
+      //Update Game State
+      const gameDeltaTime = Date.now() - GameStateRefCache.current.startDate;
+      if (gameDeltaTime > LEVEL_DURATION) {
+        GameOver();
+      } else {
+        //UpdatePlayerJarPosition
+        const lastPlayerJarPosition = playerRefCache.current.positions[playerRefCache.current.positions.length - 1];
+        const playerJarPosition = updatePlayerJarPosition(lastPlayerJarPosition, deltaTime);
+
+        //Check Collisions
+        //Check With Objective
+        const isCollidingWithObjective = isColliding(
+          playerJarPosition.position,
+          GameStateRefCache.current.objective,
+          jamJarSize.width * 0.7,
+        );
+        if (isCollidingWithObjective) {
+          CompleteLevel();
+          return;
+        }
+
+        //Check with other jars
+        const isCollidingWithJars = jarsRefCache.current.some((jar) => {
+          const jarPosition = jar.positions[frame]?.position;
+          return jarPosition && isColliding(playerJarPosition.position, jarPosition, jamJarSize.width * 0.7);
+        });
+        if (isCollidingWithJars) {
+          GameOver();
+          return;
+        }
+
+        const newPlayerJar: JarMovementType = {
+          ...playerJar,
+          positions: [...playerRefCache.current.positions, playerJarPosition],
+        };
+        setPlayerJar(newPlayerJar);
+        playerRefCache.current = newPlayerJar;
+      }
     }
+
     //Trigger next frame Update
     requestUpdateRef.current = requestAnimationFrame(update);
   };

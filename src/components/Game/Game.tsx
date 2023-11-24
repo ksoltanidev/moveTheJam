@@ -2,7 +2,7 @@ import { GameContainer } from './Game.styles.ts';
 import JamJar from '../JamJar/JamJar.tsx';
 import PlayableJamJar from '../PlayableJamJar/PlayableJamJar.tsx';
 import { useEffect } from 'react';
-import useGame from './useGame.tsx';
+import useGame, { LEVEL_DURATION } from './useGame.tsx';
 import TargetObjectiv from '../TargetObjective/TargetObjective.tsx';
 
 const BOARD_SIZE = { width: 800, height: 500 };
@@ -20,8 +20,9 @@ export default function Game() {
 
   return (
     <GameContainer size={BOARD_SIZE}>
-      <h2>Keypress: {keyPressedRef.current}</h2>
-      <h2>Frame: {frame}</h2>
+      <h2>Time Left: {(LEVEL_DURATION - (Date.now() - gameState.startDate)) / 1000}</h2>
+      <h2>Score: {gameState.score}</h2>
+      {gameState.gameState === 'gameOver' && <h1>Game Over</h1>}
       <PlayableJamJar jarMovement={playerJar} />
       {gameState.gameState === 'playing' &&
         jars.map((jar) => {
