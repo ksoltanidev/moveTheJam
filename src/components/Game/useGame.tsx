@@ -1,9 +1,24 @@
 import { useEffect, useRef, useState } from 'react';
-import { GameStateType, JarMovementType } from './Game.tsx';
 import useKeyboard from './useKeyboard.tsx';
+import { getRandomPosition } from './utils/getRandomPosition.tsx';
 
-const GAME_SPEED = 200;
-const LEVEL_DURATION = 4000;
+const GAME_SPEED = 250;
+const LEVEL_DURATION = 12000;
+
+export type JarMovementType = {
+  id: number;
+  positions: {
+    position: { x: number; y: number };
+    state: 'full' | 'transparent';
+  }[]; //list of positions for each frame;
+};
+
+export type GameStateType = {
+  gameState: 'menu' | 'playing' | 'gameOver';
+  level: number;
+  objective: { x: number; y: number };
+  startDate: number;
+};
 
 type GameProps = {
   boardSize: { width: number; height: number };
@@ -14,13 +29,10 @@ export default function useGame({ boardSize, jamJarSize }: GameProps) {
   const [gameState, setGameState] = useState<GameStateType>({
     gameState: 'playing',
     level: 1,
+    objective: getRandomPosition(boardSize),
     startDate: Date.now(),
   });
-  const GameStateRefCache = useRef<GameStateType>({
-    gameState: 'playing',
-    level: 1,
-    startDate: Date.now(),
-  });
+  const GameStateRefCache = useRef<GameStateType>(gameState);
 
   const [jars, setJars] = useState<JarMovementType[]>([]);
   const jarsRefCache = useRef<JarMovementType[]>([]);
@@ -29,7 +41,7 @@ export default function useGame({ boardSize, jamJarSize }: GameProps) {
     id: 1,
     positions: [
       {
-        position: { x: 50, y: 50 },
+        position: getRandomPosition(boardSize),
         state: 'full',
       },
     ],
@@ -46,6 +58,7 @@ export default function useGame({ boardSize, jamJarSize }: GameProps) {
     const newGameState = {
       ...GameStateRefCache.current,
       level: GameStateRefCache.current.level + 1,
+      objective: getRandomPosition(boardSize),
       startDate: Date.now(),
     };
     setGameState(newGameState);
@@ -60,7 +73,7 @@ export default function useGame({ boardSize, jamJarSize }: GameProps) {
       id: playerRefCache.current.id + 1,
       positions: [
         {
-          position: { x: 0, y: 0 },
+          position: getRandomPosition(boardSize),
           state: 'full',
         },
       ],

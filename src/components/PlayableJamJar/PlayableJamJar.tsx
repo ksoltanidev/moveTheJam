@@ -1,5 +1,5 @@
 import JamJar from '../JamJar/JamJar.tsx';
-import { JarMovementType } from '../Game/Game.tsx';
+import { JarMovementType } from '../Game/useGame.tsx';
 
 type PlayableJamJarProps = {
   jarMovement: JarMovementType;

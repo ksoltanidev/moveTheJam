@@ -3,20 +3,8 @@ import JamJar from '../JamJar/JamJar.tsx';
 import PlayableJamJar from '../PlayableJamJar/PlayableJamJar.tsx';
 import { useEffect } from 'react';
 import useGame from './useGame.tsx';
+import TargetObjectiv from '../TargetObjective/TargetObjective.tsx';
 
-export type JarMovementType = {
-  id: number;
-  positions: {
-    position: { x: number; y: number };
-    state: 'full' | 'transparent';
-  }[]; //list of positions for each frame;
-};
-
-export type GameStateType = {
-  gameState: 'menu' | 'playing' | 'gameOver';
-  level: number;
-  startDate: number;
-};
 const BOARD_SIZE = { width: 800, height: 500 };
 
 export default function Game() {
@@ -40,6 +28,7 @@ export default function Game() {
           const jarCurrentPosition = jar.positions[frame]?.position;
           return <JamJar key={jar.id} jarNumber={jar.id} position={jarCurrentPosition} color={'white'} />;
         })}
+      <TargetObjectiv position={gameState.objective} />
     </GameContainer>
   );
 }
