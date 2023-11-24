@@ -1,5 +1,6 @@
 import { GameContainer } from './Game.styles.ts';
 import JamJar from '../JamJar/JamJar.tsx';
+import PlayableJamJar from '../PlayableJamJar/PlayableJamJar.tsx';
 import { useEffect, useRef, useState } from 'react';
 
 export type JarMovementType = {
@@ -37,6 +38,7 @@ export default function Game() {
 
   return (
     <GameContainer>
+      <PlayableJamJar/>
       <JamJar position={{ x: 50, y: 50 }} color={'white'} />
       {GameState.gameState === 'playing' &&
         GameState.jars.map((jar, index) => (
