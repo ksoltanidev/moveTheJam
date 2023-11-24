@@ -1,8 +1,9 @@
 import styled from 'styled-components';
 
-export const GameContainer = styled.div`
+export const GameContainer = styled.div<{ size: { width: number; height: number } }>`
   position: relative;
   background: red;
-  width: 400px;
-  height: 400px;
+  width: ${({ size }) => size.width}px;
+  height: ${({ size }) => size.height}px;
+  color: black;
 `;

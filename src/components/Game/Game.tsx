@@ -1,7 +1,8 @@
 import { GameContainer } from './Game.styles.ts';
 import JamJar from '../JamJar/JamJar.tsx';
 import PlayableJamJar from '../PlayableJamJar/PlayableJamJar.tsx';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect } from 'react';
+import useGame from './useGame.tsx';
 
 export type JarMovementType = {
   id: number;
@@ -14,36 +15,31 @@ export type JarMovementType = {
 export type GameStateType = {
   gameState: 'menu' | 'playing' | 'gameOver';
   level: number;
-  jars: JarMovementType[];
+  startDate: number;
 };
+const BOARD_SIZE = { width: 800, height: 500 };
 
 export default function Game() {
-  const [GameState, setGameState] = useState<GameStateType>({
-    gameState: 'playing',
-    level: 1,
-    jars: [],
+  const { gameState, jars, playerJar, frame, keyPressedRef } = useGame({
+    boardSize: BOARD_SIZE,
+    jamJarSize: { width: 40, height: 40 }, //todo set elsewhere
   });
-  const [frame, setFrame] = useState(0);
-  const requestRef = useRef<number>(0);
-
-  const update = () => {
-    setFrame((prevFrame) => prevFrame + 1); // Increment frame or reset if necessary
-    requestRef.current = requestAnimationFrame(update);
-  };
 
   useEffect(() => {
-    requestRef.current = requestAnimationFrame(update);
-    return () => cancelAnimationFrame(requestRef.current);
-  }, []); // Runs once on component mount
+    // console.log('jars', jars);
+    // console.log('cache', playerRefCache.current);
+  }, [jars]);
 
   return (
-    <GameContainer>
-      <PlayableJamJar/>
-      <JamJar position={{ x: 50, y: 50 }} color={'white'} />
-      {GameState.gameState === 'playing' &&
-        GameState.jars.map((jar, index) => (
-          <JamJar key={jar.id} position={jar.positions[frame].position} color={'white'} />
-        ))}
+    <GameContainer size={BOARD_SIZE}>
+      <h2>Keypress: {keyPressedRef.current}</h2>
+      <h2>Frame: {frame}</h2>
+      <PlayableJamJar jarMovement={playerJar} />
+      {gameState.gameState === 'playing' &&
+        jars.map((jar) => {
+          const jarCurrentPosition = jar.positions[frame]?.position;
+          return <JamJar key={jar.id} jarNumber={jar.id} position={jarCurrentPosition} color={'white'} />;
+        })}
     </GameContainer>
   );
 }
