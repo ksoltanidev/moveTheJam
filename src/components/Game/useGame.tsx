@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import useKeyboard from './useKeyboard.tsx';
 import { getRandomPosition } from './utils/getRandomPosition.tsx';
 import isColliding from './utils/isColliding.tsx';
@@ -28,27 +28,35 @@ type GameProps = {
 };
 
 export default function useGame({ boardSize, jamJarSize }: GameProps) {
-  const [gameState, setGameState] = useState<GameStateType>({
-    gameState: 'playing',
-    level: 1,
-    score: 0,
-    objective: getRandomPosition(boardSize),
-    startDate: Date.now(),
-  });
+  const initialGameState: GameStateType = useMemo(() => {
+    return {
+      gameState: 'playing',
+      level: 1,
+      score: 0,
+      objective: getRandomPosition(boardSize),
+      startDate: Date.now(),
+    };
+  }, [boardSize]);
+
+  const initialPlayerJar: JarMovementType = useMemo(() => {
+    return {
+      id: 1,
+      positions: [
+        {
+          position: getRandomPosition(boardSize),
+          state: 'full',
+        },
+      ],
+    };
+  }, [boardSize]);
+
+  const [gameState, setGameState] = useState<GameStateType>(initialGameState);
   const GameStateRefCache = useRef<GameStateType>(gameState);
 
   const [jars, setJars] = useState<JarMovementType[]>([]);
   const jarsRefCache = useRef<JarMovementType[]>([]);
 
-  const [playerJar, setPlayerJar] = useState<JarMovementType>({
-    id: 1,
-    positions: [
-      {
-        position: getRandomPosition(boardSize),
-        state: 'full',
-      },
-    ],
-  });
+  const [playerJar, setPlayerJar] = useState<JarMovementType>(initialPlayerJar);
   const playerRefCache = useRef<JarMovementType>(playerJar);
 
   const [frame, setFrame] = useState(0);
@@ -57,7 +65,7 @@ export default function useGame({ boardSize, jamJarSize }: GameProps) {
   const requestUpdateRef = useRef<number>(0);
   const { keyPressedRef } = useKeyboard();
 
-  function CompleteLevel() {
+  const CompleteLevel = useCallback(() => {
     const newGameState = {
       ...GameStateRefCache.current,
       level: GameStateRefCache.current.level + 1,
@@ -88,13 +96,17 @@ export default function useGame({ boardSize, jamJarSize }: GameProps) {
     setFrame(0);
     lastFrameTimeRef.current = Date.now();
     // console.log('NewLevel', newPlayerJar);
-  }
+  }, [boardSize, gameState.startDate]);
 
   function GameOver() {
     const newGameState = {
       ...GameStateRefCache.current,
       gameState: 'gameOver' as const,
     };
+    const bestScore = window.localStorage.getItem('best_score');
+    if (!bestScore || parseInt(bestScore) < GameStateRefCache.current.score) {
+      window.localStorage.setItem('best_score', GameStateRefCache.current.score.toString());
+    }
     setGameState(newGameState);
     GameStateRefCache.current = newGameState;
 
@@ -102,39 +114,57 @@ export default function useGame({ boardSize, jamJarSize }: GameProps) {
     lastFrameTimeRef.current = Date.now();
   }
 
-  function updatePlayerJarPosition(lastPlayerJarPosition: JarMovementType['positions'][0], deltaTime: number) {
-    const playerJarPosition = {
-      ...lastPlayerJarPosition,
-      position: {
-        ...lastPlayerJarPosition.position,
-      },
-    };
-    if (keyPressedRef.current) {
-      if (keyPressedRef.current === 'ArrowRight')
-        playerJarPosition.position.x = Math.min(
-          boardSize.width - jamJarSize.width / 2,
-          playerJarPosition.position.x - (GAME_SPEED * deltaTime) / 1000,
-        );
-      if (keyPressedRef.current === 'ArrowLeft')
-        playerJarPosition.position.x = Math.max(
-          jamJarSize.height / 2,
-          playerJarPosition.position.x + (GAME_SPEED * deltaTime) / 1000,
-        );
-      if (keyPressedRef.current === 'ArrowDown')
-        playerJarPosition.position.y = Math.min(
-          boardSize.height - jamJarSize.width / 2,
-          playerJarPosition.position.y - (GAME_SPEED * deltaTime) / 1000,
-        );
-      if (keyPressedRef.current === 'ArrowUp')
-        playerJarPosition.position.y = Math.max(
-          jamJarSize.height / 2,
-          playerJarPosition.position.y + (GAME_SPEED * deltaTime) / 1000,
-        );
-    }
-    return playerJarPosition;
-  }
+  const restartGame = () => {
+    const restartGameState = { ...initialGameState, startDate: Date.now() };
+    setGameState(restartGameState);
+    GameStateRefCache.current = restartGameState;
 
-  const update = () => {
+    setPlayerJar(initialPlayerJar);
+    playerRefCache.current = initialPlayerJar;
+
+    setJars([]);
+    jarsRefCache.current = [];
+
+    setFrame(0);
+    lastFrameTimeRef.current = Date.now();
+  };
+
+  const updatePlayerJarPosition = useCallback(
+    (lastPlayerJarPosition: JarMovementType['positions'][0], deltaTime: number) => {
+      const playerJarPosition = {
+        ...lastPlayerJarPosition,
+        position: {
+          ...lastPlayerJarPosition.position,
+        },
+      };
+      if (keyPressedRef.current) {
+        if (keyPressedRef.current === 'ArrowRight')
+          playerJarPosition.position.x = Math.min(
+            boardSize.width - jamJarSize.width / 2,
+            playerJarPosition.position.x - (GAME_SPEED * deltaTime) / 1000,
+          );
+        if (keyPressedRef.current === 'ArrowLeft')
+          playerJarPosition.position.x = Math.max(
+            jamJarSize.height / 2,
+            playerJarPosition.position.x + (GAME_SPEED * deltaTime) / 1000,
+          );
+        if (keyPressedRef.current === 'ArrowDown')
+          playerJarPosition.position.y = Math.min(
+            boardSize.height - jamJarSize.width / 2,
+            playerJarPosition.position.y - (GAME_SPEED * deltaTime) / 1000,
+          );
+        if (keyPressedRef.current === 'ArrowUp')
+          playerJarPosition.position.y = Math.max(
+            jamJarSize.height / 2,
+            playerJarPosition.position.y + (GAME_SPEED * deltaTime) / 1000,
+          );
+      }
+      return playerJarPosition;
+    },
+    [boardSize.height, boardSize.width, jamJarSize.height, jamJarSize.width, keyPressedRef],
+  );
+
+  const update = useCallback(() => {
     if (gameState.gameState == 'playing') {
       setFrame((prevFrame) => prevFrame + 1); // Increment frame or reset if necessary
 
@@ -183,7 +213,7 @@ export default function useGame({ boardSize, jamJarSize }: GameProps) {
 
     //Trigger next frame Update
     requestUpdateRef.current = requestAnimationFrame(update);
-  };
+  }, [CompleteLevel, frame, gameState.gameState, jamJarSize.width, playerJar, updatePlayerJarPosition]);
 
   useEffect(() => {
     requestUpdateRef.current = requestAnimationFrame(update);
@@ -191,5 +221,5 @@ export default function useGame({ boardSize, jamJarSize }: GameProps) {
   }, [update]); // Runs once on component mount
   // }, [jars, update]); // Runs once on component mount
 
-  return { gameState, jars, playerJar, frame, keyPressedRef };
+  return { gameState, jars, playerJar, frame, keyPressedRef, restartGame };
 }
