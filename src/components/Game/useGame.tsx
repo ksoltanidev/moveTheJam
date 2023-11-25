@@ -30,7 +30,7 @@ type GameProps = {
 export default function useGame({ boardSize, jamJarSize }: GameProps) {
   const initialGameState: GameStateType = useMemo(() => {
     return {
-      gameState: 'playing',
+      gameState: 'menu',
       level: 1,
       score: 0,
       objective: getRandomPosition(boardSize),
@@ -114,8 +114,8 @@ export default function useGame({ boardSize, jamJarSize }: GameProps) {
     lastFrameTimeRef.current = Date.now();
   }
 
-  const restartGame = () => {
-    const restartGameState = { ...initialGameState, startDate: Date.now() };
+  const changeGameState = (state: 'menu' | 'playing' | 'gameOver') => {
+    const restartGameState = { ...initialGameState, gameState: state, startDate: Date.now() };
     setGameState(restartGameState);
     GameStateRefCache.current = restartGameState;
 
@@ -221,5 +221,5 @@ export default function useGame({ boardSize, jamJarSize }: GameProps) {
   }, [update]); // Runs once on component mount
   // }, [jars, update]); // Runs once on component mount
 
-  return { gameState, jars, playerJar, frame, keyPressedRef, restartGame };
+  return { gameState, jars, playerJar, frame, keyPressedRef, changeGameState };
 }
