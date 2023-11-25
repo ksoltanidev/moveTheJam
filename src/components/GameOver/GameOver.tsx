@@ -1,9 +1,10 @@
 interface GameOverProps {
   score: number;
   handleRestart: () => void;
+  handleExit: () => void;
 }
 
-const GameOver = ({ score, handleRestart }: GameOverProps) => {
+const GameOver = ({ score, handleRestart, handleExit }: GameOverProps) => {
   const bestScore = window.localStorage.getItem('best_score');
   return (
     <div>
@@ -11,6 +12,7 @@ const GameOver = ({ score, handleRestart }: GameOverProps) => {
       {bestScore && <span>Best score: {bestScore}</span>}
       <span>Score: {score}</span>
       <button onClick={handleRestart}>Try Again</button>
+      <button onClick={handleExit}>Return to menu </button>
     </div>
   );
 };

@@ -1,18 +1,28 @@
 import { UIContainer } from './Game.styles.ts';
 import useGame, { LEVEL_DURATION } from './useGame.tsx';
 import GameOver from '../GameOver/GameOver.tsx';
+import StartMenu from '../StartMenu/StartMenu.tsx';
 import GameScene from '../GameScene/GameScene.tsx';
 
 export const BOARD_SIZE = { width: 800, height: 500 };
 export const JAR_SIZE = { width: 40, height: 40 };
 
 export default function Game() {
-  const { gameState, jars, playerJar, frame, restartGame } = useGame({
+  const { gameState, jars, playerJar, frame, changeGameState } = useGame({
     boardSize: BOARD_SIZE,
     jamJarSize: JAR_SIZE,
   });
 
-  if (gameState.gameState === 'gameOver') return <GameOver score={gameState.score} handleRestart={restartGame} />;
+  if (gameState.gameState === 'menu') return <StartMenu handleStart={() => changeGameState('playing')} />;
+
+  if (gameState.gameState === 'gameOver')
+    return (
+      <GameOver
+        score={gameState.score}
+        handleRestart={() => changeGameState('playing')}
+        handleExit={() => changeGameState('menu')}
+      />
+    );
 
   return (
     <div>
