@@ -30,7 +30,7 @@ type GameProps = {
 export default function useGame({ boardSize, jamJarSize }: GameProps) {
   const initialGameState: GameStateType = useMemo(() => {
     return {
-      gameState: 'menu',
+      gameState: 'gameOver',
       level: 1,
       score: 0,
       objective: getRandomPosition(boardSize),

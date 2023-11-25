@@ -1,7 +1,7 @@
 import { SceneContainer } from './GameScene.styles.ts';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, PerspectiveCamera } from '@react-three/drei';
-import { folder, useControls } from 'leva';
+import { PerspectiveCamera } from '@react-three/drei';
+import { folder, Leva, useControls } from 'leva';
 import { GameStateType, JarMovementType } from '../Game/useGame.tsx';
 import Table from './Table/Table.tsx';
 import Jar from './Jar/Jar.tsx';
@@ -111,6 +111,7 @@ export default function GameScene({ playerJar, jars, frame, gameState }: GameSce
   ];
   return (
     <SceneContainer>
+      <Leva hidden={true} />
       <Canvas>
         <PerspectiveCamera
           makeDefault
