@@ -1,9 +1,11 @@
 import styled from 'styled-components';
 
-export const GameContainer = styled.div<{ size: { width: number; height: number } }>`
-  position: relative;
-  background: red;
-  width: ${({ size }) => size.width}px;
-  height: ${({ size }) => size.height}px;
-  color: black;
+export const UIContainer = styled.div<{ size: { width: number; height: number } }>`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: transparent;
+  color: white;
 `;

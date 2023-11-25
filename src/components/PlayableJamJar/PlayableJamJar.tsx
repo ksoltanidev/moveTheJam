@@ -1,5 +1,6 @@
-import JamJar from '../JamJar/JamJar.tsx';
 import { JarMovementType } from '../Game/useGame.tsx';
+import Jar from '../GameScene/Jar/Jar.tsx';
+import { convertToThreePosition } from '../GameScene/utils/convertToThreePosition.tsx';
 
 type PlayableJamJarProps = {
   jarMovement: JarMovementType;
@@ -7,11 +8,13 @@ type PlayableJamJarProps = {
 
 const PlayableJamJar = ({ jarMovement }: PlayableJamJarProps) => {
   const lastPosition = jarMovement.positions[jarMovement.positions.length - 1];
-
   return (
-    <>
-      <JamJar position={{ x: lastPosition.position.x, y: lastPosition.position.y }} color={'blue'} />
-    </>
+    <Jar
+      id={-1}
+      position={convertToThreePosition({ x: lastPosition.position.x, y: lastPosition.position.y })}
+      color={'#0480f4'}
+      lidColor={'#0a71d8'}
+    />
   );
 };
 
