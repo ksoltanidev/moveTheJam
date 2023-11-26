@@ -29,11 +29,43 @@ export const StyledTimeAndInfo = styled.h2`
   }
 `;
 
-export const StyledScore = styled.div`
+export const StyledScoreAndLevel = styled.div`
   position: absolute;
   top: 30px;
   left: 20px;
-  > h2 {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  h2 {
     font-size: 24px;
+    margin: 0;
+    padding: 0;
+  }
+`;
+
+export const StyledScore = styled.div`
+  display: flex;
+  gap: 8px;
+`;
+
+export const StyledBonusPoints = styled.div`
+  animation: bonusPoints 1s ease-in-out;
+  font-weight: bold;
+  font-size: 24px;
+  opacity: 1;
+
+  @keyframes bonusPoints {
+    0% {
+      transform: translateY(-10px);
+      opacity: 1;
+    }
+    20% {
+      transform: scale(1.3) translateY(0);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1.3) translateY(50px);
+      opacity: 0;
+    }
   }
 `;

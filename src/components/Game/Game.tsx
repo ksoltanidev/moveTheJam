@@ -1,4 +1,4 @@
-import { StyledScore, StyledTimeAndInfo, UIContainer } from './Game.styles.ts';
+import { StyledBonusPoints, StyledScoreAndLevel, StyledTimeAndInfo, UIContainer, StyledScore } from './Game.styles.ts';
 import useGame, { IMMUNE_DURATION, LEVEL_DURATION } from './useGame.tsx';
 import GameOver from '../GameOver/GameOver.tsx';
 import StartMenu from '../StartMenu/StartMenu.tsx';
@@ -17,8 +17,12 @@ export default function Game() {
     jamJarSize: JAR_SIZE,
   });
   const gameDeltaTime = Date.now() - gameState.startDate;
-
+  const [scoreCache, setScoreCache] = useState<{ score: number; delta: number | null }>({
+    score: 0,
+    delta: null,
+  });
   const [isSongPlaying, setIsSongPlaying] = useState<boolean>(false);
+  const [isSongMuted, setIsSongMuted] = useState<boolean>(false);
   const [play, { stop }] = useSound(gameAudio, {
     volume: 0.05,
     onplay: () => setIsSongPlaying(true),
@@ -26,20 +30,33 @@ export default function Game() {
   });
 
   useEffect(() => {
-    if (!isSongPlaying) play();
-  }, [play]);
+    if (!isSongPlaying && !isSongMuted) play();
+  }, [isSongPlaying, play]);
 
   function onSoundButton() {
-    console.log('isPlaying', isSongPlaying);
     if (isSongPlaying) {
-      console.log('stop');
+      setIsSongMuted(false);
       setIsSongPlaying(false);
       stop();
     } else {
+      setIsSongMuted(true);
       setIsSongPlaying(true);
       play();
     }
   }
+
+  useEffect(() => {
+    setScoreCache({
+      score: gameState.score,
+      delta: gameState.score - scoreCache.score,
+    });
+    setTimeout(() => {
+      setScoreCache({
+        score: gameState.score,
+        delta: null,
+      });
+    }, 1000);
+  }, [gameState.score]);
 
   if (gameState.gameState === 'menu')
     return (
@@ -67,10 +84,13 @@ export default function Game() {
           <h1>Time left: {((LEVEL_DURATION - (Date.now() - gameState.startDate)) / 1000).toFixed(1)}s</h1>
           {gameDeltaTime < IMMUNE_DURATION && <p>IMMUNE</p>}
         </StyledTimeAndInfo>
-        <StyledScore>
-          <h2>Score: {gameState.score}</h2>
+        <StyledScoreAndLevel>
+          <StyledScore>
+            <h2>Score: {gameState.score}</h2>
+            {scoreCache.delta && <StyledBonusPoints>+{scoreCache.delta}</StyledBonusPoints>}
+          </StyledScore>
           <h2>Level: {gameState.level}</h2>
-        </StyledScore>
+        </StyledScoreAndLevel>
       </UIContainer>
     </div>
   );
