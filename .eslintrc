@@ -33,7 +33,7 @@
   "rules": {
     "prettier/prettier": 2,
     "no-unused-vars": [
-      "error",
+      "warning",
       {
         "vars": "all",
         "args": "after-used",

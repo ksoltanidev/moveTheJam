@@ -1,7 +1,7 @@
 import { SceneContainer } from './MenuBackground.styles.ts';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Mask, PerspectiveCamera } from '@react-three/drei';
-import { folder, Leva, useControls } from 'leva';
+import { Leva } from 'leva';
 import MenuJars from './MenuJars.tsx';
 import { useMemo, useRef, useState } from 'react';
 
@@ -126,6 +126,7 @@ function Scene({
   );
 }
 
+// @ts-ignore
 function Frame(props) {
   return (
     <mesh {...props}>

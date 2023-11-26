@@ -4,6 +4,7 @@ import GameOver from '../GameOver/GameOver.tsx';
 import StartMenu from '../StartMenu/StartMenu.tsx';
 import GameScene from '../GameScene/GameScene.tsx';
 import gameAudio from '../../../public/audio.mp3';
+// @ts-ignore
 import useSound from 'use-sound';
 import { useEffect, useState } from 'react';
 

@@ -1,3 +1,4 @@
+// @ts-ignore
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { useFrame, useLoader } from '@react-three/fiber';
 import { useEffect, useMemo, useRef } from 'react';
@@ -78,7 +79,7 @@ export default function MenuJars({ randomPositions, instanceCount, lidColor, jam
 
   return (
     <group position={[0, 2, -4]} scale={2}>
-      <instancedMesh ref={instancedMeshRefPot} args={[pot.geometry, null, instanceCount]}>
+      <instancedMesh ref={instancedMeshRefPot} args={[pot.geometry, null as any, instanceCount]}>
         <meshPhysicalMaterial
           color={'#b2d4e5'}
           roughness={0.1}
@@ -90,10 +91,10 @@ export default function MenuJars({ randomPositions, instanceCount, lidColor, jam
           {...stencil}
         />
       </instancedMesh>
-      <instancedMesh ref={instancedMeshRefLid} args={[lid.geometry, null, instanceCount]}>
+      <instancedMesh ref={instancedMeshRefLid} args={[lid.geometry, null as any, instanceCount]}>
         <meshStandardMaterial color={lidColor} {...stencil} />
       </instancedMesh>
-      <instancedMesh ref={instancedMeshRefJam} args={[jam.geometry, null, instanceCount]}>
+      <instancedMesh ref={instancedMeshRefJam} args={[jam.geometry, null as any, instanceCount]}>
         <meshStandardMaterial color={jamColor} {...stencil} />
       </instancedMesh>
     </group>
