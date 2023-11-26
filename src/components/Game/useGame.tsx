@@ -5,7 +5,7 @@ import isColliding from './utils/isColliding.tsx';
 import { isMovingToDirection } from './utils/keys.ts';
 
 export const GAME_SPEED = 250;
-export const LEVEL_DURATION = 1200000;
+export const LEVEL_DURATION = 12000;
 export const IMMUNE_DURATION = 1000;
 
 export type JarMovementType = {

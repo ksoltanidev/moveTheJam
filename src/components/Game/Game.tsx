@@ -24,7 +24,7 @@ export default function Game() {
   const [isSongPlaying, setIsSongPlaying] = useState<boolean>(false);
   const [isSongMuted, setIsSongMuted] = useState<boolean>(false);
   const [play, { stop }] = useSound(gameAudio, {
-    volume: 0.05,
+    volume: 0.25,
     onplay: () => setIsSongPlaying(true),
     onend: () => setIsSongPlaying(false),
   });
@@ -34,14 +34,13 @@ export default function Game() {
   }, [isSongPlaying, play]);
 
   function onSoundButton() {
-    if (isSongPlaying) {
+    if (isSongMuted) {
       setIsSongMuted(false);
-      setIsSongPlaying(false);
-      stop();
+      // setIsSongPlaying(true);
+      play();
     } else {
       setIsSongMuted(true);
-      setIsSongPlaying(true);
-      play();
+      stop();
     }
   }
 
@@ -63,7 +62,7 @@ export default function Game() {
       <StartMenu
         handleStart={() => changeGameState('playing')}
         onSoundButton={onSoundButton}
-        isSongPlaying={isSongPlaying}
+        isSongPlaying={!isSongMuted}
       />
     );
 
