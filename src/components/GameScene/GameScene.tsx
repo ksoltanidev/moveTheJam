@@ -148,6 +148,14 @@ export default function GameScene({ playerJar, jars, frame, gameState }: GameSce
             );
           })}
           <TargetObjective position={gameState.objective} />
+          {gameState.bonusJar && (
+            <Jar
+              id={-20}
+              position={convertToThreePosition(gameState.bonusJar)}
+              color={'#e27101'}
+              lidColor={'#dcca06'}
+            />
+          )}
         </group>
       </Canvas>
     </SceneContainer>

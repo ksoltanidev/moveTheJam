@@ -21,6 +21,7 @@ export type GameStateType = {
   level: number;
   score: number;
   objective: { x: number; y: number };
+  bonusJar?: { x: number; y: number };
   startDate: number;
 };
 
@@ -36,6 +37,7 @@ export default function useGame({ boardSize, jamJarSize }: GameProps) {
       level: 1,
       score: 0,
       objective: getRandomPosition(boardSize),
+      bonusJar: getRandomPosition(boardSize),
       startDate: Date.now(),
     };
   }, [boardSize]);
@@ -67,12 +69,23 @@ export default function useGame({ boardSize, jamJarSize }: GameProps) {
   const requestUpdateRef = useRef<number>(0);
   const { keyPressedRef } = useKeyboard();
 
+  const TakeBonusJar = useCallback(() => {
+    const newGameState = {
+      ...GameStateRefCache.current,
+      score: GameStateRefCache.current.score + 250,
+      bonusJar: undefined,
+    };
+    setGameState(newGameState);
+    GameStateRefCache.current = newGameState;
+  }, [boardSize, gameState.startDate]);
+
   const CompleteLevel = useCallback(() => {
     const newGameState = {
       ...GameStateRefCache.current,
       level: GameStateRefCache.current.level + 1,
       score: Math.floor(GameStateRefCache.current.score + (LEVEL_DURATION - (Date.now() - gameState.startDate)) / 100), // + time left
       objective: getRandomPosition(boardSize),
+      bonusJar: getRandomPosition(boardSize),
       startDate: Date.now(),
     };
     setGameState(newGameState);
@@ -183,6 +196,17 @@ export default function useGame({ boardSize, jamJarSize }: GameProps) {
         const playerJarPosition = updatePlayerJarPosition(lastPlayerJarPosition, deltaTime);
 
         //Check Collisions
+        //Check Collisions with Bonus Jar
+        if (GameStateRefCache.current.bonusJar) {
+          const isCollidingWithBonusJar = isColliding(
+            playerJarPosition.position,
+            GameStateRefCache.current.bonusJar,
+            jamJarSize.width * 0.7,
+          );
+          if (isCollidingWithBonusJar) {
+            TakeBonusJar();
+          }
+        }
         //Check With Objective
         const isCollidingWithObjective = isColliding(
           playerJarPosition.position,
