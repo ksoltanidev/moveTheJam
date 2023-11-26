@@ -8,14 +8,17 @@ import {
   StyledPageContent,
   StyledStartButton,
   StyledGithubLink,
+  StyledSoundButton,
 } from './StartMenu.styles.ts';
 import { useEffect, useRef, useState } from 'react';
 
 interface StartMenuProps {
   handleStart: () => void;
+  onSoundButton: () => void;
+  isSongPlaying: boolean;
 }
 
-const StartMenu = ({ handleStart }: StartMenuProps) => {
+const StartMenu = ({ handleStart, onSoundButton, isSongPlaying }: StartMenuProps) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
   const requestUpdateRef = useRef<any>();
@@ -57,6 +60,7 @@ const StartMenu = ({ handleStart }: StartMenuProps) => {
           Review the code on <a href="https://github.com/ksoltanidev/moveTheJam">GitHub</a>
         </StyledGithubLink>
       </StyledPageContent>
+      <StyledSoundButton onClick={onSoundButton}>{isSongPlaying ? 'MUTE' : 'MUSIC'}</StyledSoundButton>
       <StyledCursor position={cursorPosition} />
     </StyledStartMenu>
   );

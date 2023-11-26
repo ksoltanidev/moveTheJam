@@ -118,3 +118,28 @@ export const StyledGithubLink = styled.span`
     }
   }
 `;
+
+export const StyledSoundButton = styled.button`
+  position: absolute;
+  bottom: 80px;
+  right: 40px;
+  width: 100px;
+  height: 100px;
+  background: rgba(66, 98, 118, 0.13);
+  border-radius: 50%;
+  border: none;
+  box-shadow: 0 0 6px 3px rgba(98, 98, 98, 0.07);
+
+  color: #535bf2;
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: 0;
+  pointer-events: all;
+
+  transition: all 0.3s ease;
+  &:hover {
+    color: #b0cbd9;
+    background: rgba(66, 98, 118, 0.2);
+    transform: scale(1.1);
+  }
+`;

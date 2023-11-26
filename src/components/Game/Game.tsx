@@ -19,7 +19,7 @@ export default function Game() {
   const gameDeltaTime = Date.now() - gameState.startDate;
 
   const [isSongPlaying, setIsSongPlaying] = useState<boolean>(false);
-  const [play] = useSound(gameAudio, {
+  const [play, { stop }] = useSound(gameAudio, {
     volume: 0.05,
     onplay: () => setIsSongPlaying(true),
     onend: () => setIsSongPlaying(false),
@@ -27,9 +27,28 @@ export default function Game() {
 
   useEffect(() => {
     if (!isSongPlaying) play();
-  }, [isSongPlaying, play]);
+  }, [play]);
 
-  if (gameState.gameState === 'menu') return <StartMenu handleStart={() => changeGameState('playing')} />;
+  function onSoundButton() {
+    console.log('isPlaying', isSongPlaying);
+    if (isSongPlaying) {
+      console.log('stop');
+      setIsSongPlaying(false);
+      stop();
+    } else {
+      setIsSongPlaying(true);
+      play();
+    }
+  }
+
+  if (gameState.gameState === 'menu')
+    return (
+      <StartMenu
+        handleStart={() => changeGameState('playing')}
+        onSoundButton={onSoundButton}
+        isSongPlaying={isSongPlaying}
+      />
+    );
 
   if (gameState.gameState === 'gameOver')
     return (
