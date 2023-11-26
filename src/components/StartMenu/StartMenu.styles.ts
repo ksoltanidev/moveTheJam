@@ -84,7 +84,7 @@ export const StyledStartButton = styled.button`
   background: transparent;
   border: none;
   outline: none;
-  cursor: pointer;
+  cursor: none;
   padding: 20px;
   transition: all 0.5s ease;
   pointer-events: all;
