@@ -24,7 +24,7 @@ export default function Game() {
   const [isSongPlaying, setIsSongPlaying] = useState<boolean>(false);
   const [isSongMuted, setIsSongMuted] = useState<boolean>(false);
   const [play, { stop }] = useSound(gameAudio, {
-    volume: 0.25,
+    volume: 0.08,
     onplay: () => setIsSongPlaying(true),
     onend: () => setIsSongPlaying(false),
   });
