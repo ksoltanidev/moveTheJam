@@ -1,15 +1,16 @@
 import { useCallback, useEffect, useRef } from 'react';
 
 export default function useKeyboard() {
-  const keyPressedRef = useRef<string | null>(null);
+  const keyPressedRef = useRef<Array<string>>([]);
 
   const handleKeyPress = useCallback((e: KeyboardEvent) => {
     const { code } = e;
-    keyPressedRef.current = code;
+    if (!keyPressedRef.current.includes(code)) keyPressedRef.current.push(code);
   }, []);
 
-  const handleKeyUp = useCallback(() => {
-    keyPressedRef.current = null;
+  const handleKeyUp = useCallback((e: KeyboardEvent) => {
+    const { code } = e;
+    keyPressedRef.current = keyPressedRef.current.filter((keyPressed) => keyPressed !== code);
   }, []);
 
   useEffect(() => {

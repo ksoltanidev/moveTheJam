@@ -138,23 +138,23 @@ export default function useGame({ boardSize, jamJarSize }: GameProps) {
           ...lastPlayerJarPosition.position,
         },
       };
-      if (keyPressedRef.current) {
-        if (keyPressedRef.current === 'ArrowRight')
+      if (keyPressedRef.current.length > 0) {
+        if (keyPressedRef.current.includes('ArrowRight'))
           playerJarPosition.position.x = Math.min(
             boardSize.width - jamJarSize.width / 2,
             playerJarPosition.position.x - (GAME_SPEED * deltaTime) / 1000,
           );
-        if (keyPressedRef.current === 'ArrowLeft')
+        if (keyPressedRef.current.includes('ArrowLeft'))
           playerJarPosition.position.x = Math.max(
             jamJarSize.height / 2,
             playerJarPosition.position.x + (GAME_SPEED * deltaTime) / 1000,
           );
-        if (keyPressedRef.current === 'ArrowDown')
+        if (keyPressedRef.current.includes('ArrowDown'))
           playerJarPosition.position.y = Math.min(
             boardSize.height - jamJarSize.width / 2,
             playerJarPosition.position.y - (GAME_SPEED * deltaTime) / 1000,
           );
-        if (keyPressedRef.current === 'ArrowUp')
+        if (keyPressedRef.current.includes('ArrowUp'))
           playerJarPosition.position.y = Math.max(
             jamJarSize.height / 2,
             playerJarPosition.position.y + (GAME_SPEED * deltaTime) / 1000,
