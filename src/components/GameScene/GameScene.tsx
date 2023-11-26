@@ -113,6 +113,7 @@ export default function GameScene({ playerJar, jars, frame, gameState }: GameSce
     <SceneContainer>
       <Leva hidden={true} />
       <Canvas>
+        <color attach="background" args={['#b0cbd9']} />
         <PerspectiveCamera
           makeDefault
           position={[0, -25, 60]}

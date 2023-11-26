@@ -4,7 +4,7 @@ import { getRandomPosition } from './utils/getRandomPosition.tsx';
 import isColliding from './utils/isColliding.tsx';
 
 export const GAME_SPEED = 250;
-export const LEVEL_DURATION = 12000;
+export const LEVEL_DURATION = 120000;
 
 export type JarMovementType = {
   id: number;
@@ -30,7 +30,7 @@ type GameProps = {
 export default function useGame({ boardSize, jamJarSize }: GameProps) {
   const initialGameState: GameStateType = useMemo(() => {
     return {
-      gameState: 'gameOver',
+      gameState: 'playing',
       level: 1,
       score: 0,
       objective: getRandomPosition(boardSize),

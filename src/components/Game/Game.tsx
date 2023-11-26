@@ -28,7 +28,7 @@ export default function Game() {
     <div>
       <GameScene playerJar={playerJar} jars={jars} frame={frame} gameState={gameState} />
       <UIContainer size={BOARD_SIZE}>
-        <h2>Time Left: {(LEVEL_DURATION - (Date.now() - gameState.startDate)) / 1000}</h2>
+        <h1>Time left: {((LEVEL_DURATION - (Date.now() - gameState.startDate)) / 1000).toFixed(1)}s</h1>
         <h2>Score: {gameState.score}</h2>
       </UIContainer>
     </div>
