@@ -12,10 +12,11 @@
   "dependencies": {
     "@react-three/drei": "^9.88.11",
     "@react-three/fiber": "^8.13.3",
+    "leva": "^0.9.35",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "leva": "^0.9.35",
-    "three": "^0.157.0"
+    "three": "^0.157.0",
+    "use-sound": "^4.0.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.37",

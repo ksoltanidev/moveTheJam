@@ -3,11 +3,25 @@ import useGame, { LEVEL_DURATION } from './useGame.tsx';
 import GameOver from '../GameOver/GameOver.tsx';
 import StartMenu from '../StartMenu/StartMenu.tsx';
 import GameScene from '../GameScene/GameScene.tsx';
+import gameAudio from '../../../public/audio.mp3';
+import useSound from 'use-sound';
+import { useEffect, useState } from 'react';
 
 export const BOARD_SIZE = { width: 800, height: 500 };
 export const JAR_SIZE = { width: 40, height: 40 };
 
 export default function Game() {
+  const [isSongPlaying, setIsSongPlaying] = useState<boolean>(false);
+  const [play] = useSound(gameAudio, {
+    volume: 0.15,
+    onplay: () => setIsSongPlaying(true),
+    onend: () => setIsSongPlaying(false),
+  });
+
+  useEffect(() => {
+    if (!isSongPlaying) play();
+  }, [isSongPlaying, play]);
+
   const { gameState, jars, playerJar, frame, changeGameState } = useGame({
     boardSize: BOARD_SIZE,
     jamJarSize: JAR_SIZE,
