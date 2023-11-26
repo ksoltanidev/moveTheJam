@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import useKeyboard from './useKeyboard.tsx';
 import { getRandomPosition } from './utils/getRandomPosition.tsx';
 import isColliding from './utils/isColliding.tsx';
+import { isMovingToDirection } from './utils/keys.ts';
 
 export const GAME_SPEED = 250;
 export const LEVEL_DURATION = 12000;
@@ -139,22 +140,22 @@ export default function useGame({ boardSize, jamJarSize }: GameProps) {
         },
       };
       if (keyPressedRef.current.length > 0) {
-        if (keyPressedRef.current.includes('ArrowRight'))
+        if (isMovingToDirection(keyPressedRef.current, 'right'))
           playerJarPosition.position.x = Math.min(
             boardSize.width - jamJarSize.width / 2,
             playerJarPosition.position.x - (GAME_SPEED * deltaTime) / 1000,
           );
-        if (keyPressedRef.current.includes('ArrowLeft'))
+        if (isMovingToDirection(keyPressedRef.current, 'left'))
           playerJarPosition.position.x = Math.max(
             jamJarSize.height / 2,
             playerJarPosition.position.x + (GAME_SPEED * deltaTime) / 1000,
           );
-        if (keyPressedRef.current.includes('ArrowDown'))
+        if (isMovingToDirection(keyPressedRef.current, 'down'))
           playerJarPosition.position.y = Math.min(
             boardSize.height - jamJarSize.width / 2,
             playerJarPosition.position.y - (GAME_SPEED * deltaTime) / 1000,
           );
-        if (keyPressedRef.current.includes('ArrowUp'))
+        if (isMovingToDirection(keyPressedRef.current, 'up'))
           playerJarPosition.position.y = Math.max(
             jamJarSize.height / 2,
             playerJarPosition.position.y + (GAME_SPEED * deltaTime) / 1000,

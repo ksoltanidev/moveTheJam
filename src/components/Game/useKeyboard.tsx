@@ -3,9 +3,11 @@ import { useCallback, useEffect, useRef } from 'react';
 export default function useKeyboard() {
   const keyPressedRef = useRef<Array<string>>([]);
 
-  const handleKeyPress = useCallback((e: KeyboardEvent) => {
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
     const { code } = e;
-    if (!keyPressedRef.current.includes(code)) keyPressedRef.current.push(code);
+    if (!keyPressedRef.current.includes(code)) {
+      keyPressedRef.current.push(code);
+    }
   }, []);
 
   const handleKeyUp = useCallback((e: KeyboardEvent) => {
@@ -14,14 +16,14 @@ export default function useKeyboard() {
   }, []);
 
   useEffect(() => {
-    window.addEventListener('keydown', handleKeyPress);
+    window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
 
     return () => {
-      window.removeEventListener('keydown', handleKeyPress);
+      window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, [handleKeyPress]);
+  }, [handleKeyDown]);
 
   return { keyPressedRef };
 }
