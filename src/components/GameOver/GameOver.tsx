@@ -1,3 +1,12 @@
+import {
+  StyledBestScore,
+  StyledButton,
+  StyledGameOverContainer,
+  StyledScore,
+  StyledTextContainer,
+  Title,
+} from './GameOver.styles.ts';
+
 interface GameOverProps {
   score: number;
   handleRestart: () => void;
@@ -7,13 +16,18 @@ interface GameOverProps {
 const GameOver = ({ score, handleRestart, handleExit }: GameOverProps) => {
   const bestScore = window.localStorage.getItem('best_score');
   return (
-    <div>
-      <h1>Game Over</h1>
-      {bestScore && <span>Best score: {bestScore}</span>}
-      <span>Score: {score}</span>
-      <button onClick={handleRestart}>Try Again</button>
-      <button onClick={handleExit}>Return to menu </button>
-    </div>
+    <StyledGameOverContainer>
+      <Title>
+        <span>GAME</span>
+        <span>OVER</span>
+      </Title>
+      <StyledTextContainer>
+        <StyledScore>Score: {score}</StyledScore>
+        {bestScore && <StyledBestScore>Best score: {bestScore}</StyledBestScore>}
+        <StyledButton onClick={handleRestart}>Try Again</StyledButton>
+        <StyledButton onClick={handleExit}>Return to menu </StyledButton>
+      </StyledTextContainer>
+    </StyledGameOverContainer>
   );
 };
 
