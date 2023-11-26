@@ -4,7 +4,8 @@ import { getRandomPosition } from './utils/getRandomPosition.tsx';
 import isColliding from './utils/isColliding.tsx';
 
 export const GAME_SPEED = 250;
-export const LEVEL_DURATION = 120000;
+export const LEVEL_DURATION = 12000;
+export const IMMUNE_DURATION = 1000;
 
 export type JarMovementType = {
   id: number;
@@ -197,7 +198,7 @@ export default function useGame({ boardSize, jamJarSize }: GameProps) {
           const jarPosition = jar.positions[frame]?.position;
           return jarPosition && isColliding(playerJarPosition.position, jarPosition, jamJarSize.width * 0.7);
         });
-        if (isCollidingWithJars) {
+        if (isCollidingWithJars && gameDeltaTime > IMMUNE_DURATION) {
           GameOver();
           return;
         }
